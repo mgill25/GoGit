@@ -108,7 +108,7 @@ But first, we need an Index file! Lets stage some files aka put stuff into our i
 # Create a new file and add it to index directly - hash + blob creation + happens under the hood.
 > git update-index --add foobar.txt
 
-# we now have an index file in .git. We can inspect the content with:
+
 > git ls-files --stage
 100644 f6a4b702215289bde4037bb76acf18d634628539 0	foobar.txt
 100644 f907f535fae1314af17f142b0bf815cfaaf0050d 0	hello_world.txt
@@ -156,6 +156,12 @@ first plumbing commit
 ## GoLang - What I need
 
 1. Some basic knowledge about data structures builtin and https://github.com/emirpasic/gods
-2. The ability to write command line applications - argument parsing and so on
+2. The ability to write command line applications - argument parsing and so on.
 3. How to interface with the Operating System - something like python's OS module
 4. Using sha1 and zlib compression
+
+### Code Plan
+1. Represent all the "objects" in Go, things like Blob, Commit and Tree objects. These objects will have methods.
+2. Some of these objects will have common methods. How to implement them?
+3. Create abstractions for plumbing commands out of these objects + methods
+4. Create porcelain commands out of the plumbing commands
