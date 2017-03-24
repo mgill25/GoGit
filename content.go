@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"strconv"
 )
 
 func check(e error) {
@@ -17,7 +18,7 @@ func readContentFile(contentPath string) string {
 }
 
 func prependContentHeaders(contentType string, content string) string {
-	header := contentType + string(len(content)) + "\000"
-	return header + content
+	header := contentType + " " + strconv.Itoa(len(content)) + "\000"
+	newContent := header + content
+	return newContent
 }
-

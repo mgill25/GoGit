@@ -1,12 +1,11 @@
 package main
 
 import (
-	"os"
 	"github.com/urfave/cli"
-	"path/filepath"
 	"log"
+	"os"
+	"path/filepath"
 )
-
 
 func main() {
 	app := cli.NewApp()
@@ -14,7 +13,7 @@ func main() {
 	app.Usage = "Git - Implemented in GoLang!"
 	app.Commands = []cli.Command{
 		{
-			Name: "hash-object",
+			Name:  "hash-object",
 			Usage: "Compute hash ID and optionally create a blob from the file",
 			Action: func(c *cli.Context) {
 				hashObject(c.Args().First())
