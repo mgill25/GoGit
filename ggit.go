@@ -19,6 +19,13 @@ func main() {
 				hashObject(c.Args().First())
 			},
 		},
+		{
+			Name: "cat-file",
+			Usage: "Retrieve the contents of an object",
+			Action: func(c *cli.Context) {
+				catFile(c.Args().First())
+			},
+		},
 	}
 	app.Run(os.Args)
 }
@@ -35,4 +42,20 @@ func hashObject(fileName string) {
 	// Now that we have all the data with headers, we pass it through sha1 to get blob id
 	b := Blob{}
 	b.createBlob(dataWithHeaders)
+}
+
+func catFile(fileName string) {
+	// Split up the file name:
+	dirName := fileName[:2]
+	objFileName := fileName[2:]
+	dir, err := filepath.Abs(dirName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	objectHash := dir + objFileName
+	filePath := dir + "/" + objFileName
+
+	// Initialize the blob object
+	b := Blob{hash: []byte(objectHash), path: filePath}
+	b.readBlob()
 }

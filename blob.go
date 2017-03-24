@@ -6,6 +6,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"io"
+	"bytes"
+	"strings"
 )
 
 type Blob struct {
@@ -35,4 +38,17 @@ func (b *Blob) hashContent(content string) {
 	byteSlice := hash.Sum(nil)
 	b.hash = byteSlice
 	fmt.Printf("%x\n", b.hash)
+}
+
+func (b *Blob) readBlob() {
+	objFile, err := os.Open(b.path)
+	check(err)
+	var out bytes.Buffer
+	r, _ := zlib.NewReader(objFile)
+	io.Copy(&out, r)
+	data := string(out.Bytes())
+	split_data := strings.Split(data, "\000")
+	//headers := split_data[0]
+	content := split_data[1]
+	os.Stdout.Write([]byte(content))
 }
