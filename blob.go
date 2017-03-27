@@ -20,10 +20,11 @@ func (b *Blob) createBlob(content string) {
 	// First hash the content
 	b.hashContent(content)
 	// Then create a compressed blob object
-	dirName := hex.EncodeToString(b.hash[:1])
+	prefixName:= hex.EncodeToString(b.hash[:1])
 	objName := hex.EncodeToString(b.hash[1:])
-	os.Mkdir(dirName, 0755)
-	objFile, err := os.Create(dirName + string("/") + objName)
+	r := getCurrentRepo()
+	os.Mkdir(r.objPath + string("/") + prefixName, 0755)
+	objFile, err := os.Create(r.objPath + string("/") + prefixName + string("/") + objName)
 	check(err)
 	w := zlib.NewWriter(objFile)
 	w.Write([]byte(content))

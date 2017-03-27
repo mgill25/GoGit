@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"fmt"
 )
 
 func main() {
@@ -12,6 +13,7 @@ func main() {
 	app.Name = "ggit"
 	app.Usage = "Git - Implemented in GoLang!"
 	app.Commands = []cli.Command{
+		// Plumbing Commands
 		{
 			Name:  "hash-object",
 			Usage: "Compute hash ID and optionally create a blob from the file",
@@ -24,6 +26,14 @@ func main() {
 			Usage: "Retrieve the contents of an object",
 			Action: func(c *cli.Context) {
 				catFile(c.Args().First())
+			},
+		},
+		// Porcelain Commands
+		{
+			Name: "init",
+			Usage: "Initialize a new Git repository",
+			Action: func(c *cli.Context) {
+				initRepo()
 			},
 		},
 	}
@@ -45,10 +55,11 @@ func hashObject(fileName string) {
 }
 
 func catFile(fileName string) {
+	repo := getCurrentRepo()
 	// Split up the file name:
 	dirName := fileName[:2]
 	objFileName := fileName[2:]
-	dir, err := filepath.Abs(dirName)
+	dir, err := filepath.Abs(repo.objPath + "/" + dirName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,4 +69,22 @@ func catFile(fileName string) {
 	// Initialize the blob object
 	b := Blob{hash: []byte(objectHash), path: filePath}
 	b.readBlob()
+}
+
+// Initialize a new git repository
+func initRepo() {
+	dirName, err := filepath.Abs(filepath.Dir(os.Args[0]) + "git")
+	check(err)
+	os.Mkdir(dirName, 0755)
+	fmt.Println("Initialized empty Git repository in ", dirName)
+}
+
+func getCurrentRepo() Repo {
+	dirName, err := filepath.Abs(filepath.Dir(os.Args[0]) + "git")
+	check(err)
+	objPath, err := filepath.Abs(dirName + "/objects")
+	if _, err := os.Stat(objPath); os.IsNotExist(err) {
+		os.Mkdir(objPath, 0755)
+	}
+	return Repo{mainPath: dirName, objPath: objPath}
 }
